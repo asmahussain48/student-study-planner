@@ -105,6 +105,30 @@ async function sendMessage() {
         // Remove loading indicator
         loadingMsg.remove();
         
+        // Handle error from AI backend
+        if (data.error) {
+            const errMsg = document.createElement('div');
+            errMsg.className = 'mb-3';
+            errMsg.innerHTML = `<div class="d-inline-block bg-warning p-3 rounded" style="max-width: 80%;">
+                <strong>🤖 Assistant (error):</strong>
+                <div class="mt-2">${escapeHtml(data.error).replace(/\n/g, '<br>')}</div>
+            </div>`;
+            chatBox.appendChild(errMsg);
+
+            if (data.suggestion) {
+                const sugMsg = document.createElement('div');
+                sugMsg.className = 'mb-3';
+                sugMsg.innerHTML = `<div class="d-inline-block bg-light p-3 rounded" style="max-width: 80%;">
+                    <strong>🤖 Assistant (suggestion):</strong>
+                    <div class="mt-2">${escapeHtml(data.suggestion).replace(/\n/g, '<br>')}</div>
+                </div>`;
+                chatBox.appendChild(sugMsg);
+            }
+
+            chatBox.scrollTop = chatBox.scrollHeight;
+            return;
+        }
+
         // Add AI response
         const aiMsg = document.createElement('div');
         aiMsg.className = 'mb-3';

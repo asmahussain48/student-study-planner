@@ -1,10 +1,16 @@
 from flask import Flask, render_template, request, redirect, url_for, session, jsonify
 from database import init_db, add_user, get_user, add_task, get_user_tasks, update_task, delete_task, get_task_by_id
 from auth import hash_password, verify_password, is_logged_in
-from ai import get_study_plan
+from ai import get_study_plan, get_mock_study_plan, test_api_key
 from report import generate_pdf_report
 from functools import wraps
 import os
+from dotenv import load_dotenv
+
+# Load environment variables from a local .env file (if present)
+# Install with: pip install python-dotenv
+load_dotenv()
+
 from datetime import datetime
 
 app = Flask(__name__)
@@ -184,7 +190,16 @@ def ai_study_plan():
     
     # Get AI response
     response = get_study_plan(prompt, tasks)
-    
+
+    # If the AI layer returned an error-like string (our ai.py prefixes with ⚠️),
+    # return the error and a suggestion (mock) but do NOT silently replace the response.
+    if isinstance(response, str) and response.startswith('⚠️'):
+        # Log the error server-side for debugging
+        app.logger.error('AI backend error: %s', response)
+        suggestion = get_mock_study_plan(prompt, tasks)
+        return jsonify({'error': response, 'suggestion': suggestion}), 200
+
+    # Successful model output
     return jsonify({'response': response}), 200
 
 # ============= PDF REPORT =============
@@ -223,6 +238,31 @@ def download_report(filename):
     file_path = os.path.join('reports', filename)
     return send_file(file_path, as_attachment=True)
 
+
+# ============= DEBUG / DIAGNOSTICS =============
+@app.route('/debug/test-api')
+@login_required
+def debug_test_api():
+    """Test the Google Generative AI API key and return a JSON result from test_api_key().
+    Protected by login_required so only authenticated users can call it.
+    """
+    result = test_api_key()
+    status_code = 200 if result.get('ok') else 400
+    return jsonify(result), status_code
+
+
+@app.route('/debug/list-models')
+@login_required
+def debug_list_models():
+    """List the Generative Language models accessible to the configured API key."""
+    key = os.getenv('GEMINI_API_KEY') or os.getenv('GOOGLE_API_KEY')
+    if not key:
+        return jsonify({'ok': False, 'error': 'GEMINI_API_KEY (or GOOGLE_API_KEY) not set in environment'}), 400
+    ok, data = list_models(key)
+    if ok:
+        return jsonify({'ok': True, 'models': data}), 200
+    return jsonify({'ok': False, 'error': data}), 400
+
 # Error handlers
 @app.errorhandler(404)
 def not_found(e):
@@ -233,4 +273,9 @@ def server_error(e):
     return render_template('500.html'), 500
 
 if __name__ == '__main__':
+    # Startup check: warn if GOOGLE_API_KEY not set (do not print the key itself)
+    if not (os.getenv('GEMINI_API_KEY') or os.getenv('GOOGLE_API_KEY')):
+        app.logger.warning('GEMINI_API_KEY (or GOOGLE_API_KEY) is not set. AI calls will fail until you set it in your environment or .env file.')
+    else:
+        app.logger.info('GEMINI_API_KEY is set (hidden). AI features will attempt to use it.')
     app.run(debug=True, port=5000)

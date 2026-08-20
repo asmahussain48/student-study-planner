@@ -1,5 +1,7 @@
 # My 10x Solution: Student Study Planner
 
+**Author**: Asma Hussain — 2026-08-20
+
 **Project Name**: Student Study Planner  
 **Date**: 2024  
 **Technologies**: Python, Flask, SQLite, HTML/CSS, ReportLab, Google Generative AI
@@ -240,6 +242,6 @@ This project is production-ready and can be deployed to platforms like Render.co
 
 **Project Status**: ✅ Complete and Ready for Evaluation
 
-**GitHub Repository**: [Link to your GitHub]
+**GitHub Repository**: https://github.com/asmahussain48/student-study-planner.git
 
 **Live Demo**: [Link to deployed application if available]
