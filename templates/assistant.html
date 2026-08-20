@@ -1,0 +1,143 @@
+{% extends "base.html" %}
+
+{% block title %}AI Study Assistant - Student Study Planner{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-md-12">
+        <h1>🤖 AI Study Assistant</h1>
+        <p class="text-muted">Ask your AI assistant anything about your studies!</p>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-8 offset-md-2">
+        <div class="card">
+            <div class="card-header bg-info text-white">
+                <h5 class="mb-0">💬 Chat with Your Study Assistant</h5>
+            </div>
+            <div class="card-body" id="chatBox" style="height: 400px; overflow-y: auto; background-color: #f8f9fa;">
+                <div class="alert alert-info">
+                    👋 Hello! I'm your AI study assistant. Ask me anything about your studies!
+                    <br><br>
+                    Example questions:
+                    <ul class="mb-0 mt-2">
+                        <li>What should I study today?</li>
+                        <li>Help me create a study plan for tomorrow</li>
+                        <li>Which assignments should I prioritize?</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        
+        <div class="input-group mt-3">
+            <input 
+                type="text" 
+                class="form-control" 
+                id="userQuestion" 
+                placeholder="Ask me anything about your studies..."
+                onkeypress="if(event.key === 'Enter') sendMessage()"
+            >
+            <button class="btn btn-info" onclick="sendMessage()">Send</button>
+        </div>
+    </div>
+</div>
+
+<!-- Example prompts -->
+<div class="row mt-4">
+    <div class="col-md-8 offset-md-2">
+        <p class="text-muted mb-2"><small>Quick prompts:</small></p>
+        <div class="d-flex gap-2 flex-wrap">
+            <button class="btn btn-outline-secondary btn-sm" onclick="sendPredefinedPrompt('What should I study today?')">Today's Study Plan</button>
+            <button class="btn btn-outline-secondary btn-sm" onclick="sendPredefinedPrompt('Create a weekly study schedule for me')">Weekly Schedule</button>
+            <button class="btn btn-outline-secondary btn-sm" onclick="sendPredefinedPrompt('Help me with exam preparation tips')">Exam Tips</button>
+            <button class="btn btn-outline-secondary btn-sm" onclick="sendPredefinedPrompt('How can I improve my time management?')">Time Management</button>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block scripts %}
+<script>
+async function sendMessage() {
+    const question = document.getElementById('userQuestion').value.trim();
+    
+    if (!question) {
+        alert('Please enter a question');
+        return;
+    }
+    
+    // Add user message to chat
+    const chatBox = document.getElementById('chatBox');
+    const userMsg = document.createElement('div');
+    userMsg.className = 'mb-3 text-end';
+    userMsg.innerHTML = `<div class="d-inline-block bg-primary text-white p-3 rounded" style="max-width: 80%; text-align: left;">
+        <strong>You:</strong> ${escapeHtml(question)}
+    </div>`;
+    chatBox.appendChild(userMsg);
+    
+    // Show loading indicator
+    const loadingMsg = document.createElement('div');
+    loadingMsg.className = 'mb-3';
+    loadingMsg.innerHTML = `<div class="d-inline-block bg-light p-3 rounded">
+        <em>AI is thinking...</em> ⏳
+    </div>`;
+    chatBox.appendChild(loadingMsg);
+    chatBox.scrollTop = chatBox.scrollHeight;
+    
+    // Clear input
+    document.getElementById('userQuestion').value = '';
+    
+    try {
+        const response = await fetch('/api/ai/study-plan', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                prompt: question
+            })
+        });
+        
+        const data = await response.json();
+        
+        // Remove loading indicator
+        loadingMsg.remove();
+        
+        // Add AI response
+        const aiMsg = document.createElement('div');
+        aiMsg.className = 'mb-3';
+        aiMsg.innerHTML = `<div class="d-inline-block bg-light p-3 rounded" style="max-width: 80%;">
+            <strong>🤖 Assistant:</strong>
+            <div class="mt-2">${escapeHtml(data.response).replace(/\n/g, '<br>')}</div>
+        </div>`;
+        chatBox.appendChild(aiMsg);
+        
+        chatBox.scrollTop = chatBox.scrollHeight;
+    } catch (error) {
+        loadingMsg.remove();
+        const errorMsg = document.createElement('div');
+        errorMsg.className = 'mb-3';
+        errorMsg.innerHTML = `<div class="d-inline-block bg-danger text-white p-3 rounded">
+            ❌ Error: ${error.message}
+        </div>`;
+        chatBox.appendChild(errorMsg);
+    }
+}
+
+function sendPredefinedPrompt(prompt) {
+    document.getElementById('userQuestion').value = prompt;
+    sendMessage();
+}
+
+function escapeHtml(text) {
+    const div = document.createElement('div');
+    div.textContent = text;
+    return div.innerHTML;
+}
+
+// Focus on input
+document.getElementById('userQuestion').focus();
+</script>
+{% endblock %}

@@ -1,0 +1,216 @@
+/* Global Styles */
+:root {
+    --primary-color: #1f4788;
+    --secondary-color: #2e5c8a;
+    --success-color: #28a745;
+    --warning-color: #ffc107;
+    --danger-color: #dc3545;
+    --info-color: #17a2b8;
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: #f5f5f5;
+}
+
+.navbar-brand {
+    font-size: 1.5rem;
+    font-weight: bold;
+}
+
+.navbar {
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    background: linear-gradient(135deg, #1f4788 0%, #2e5c8a 100%);
+}
+
+/* Cards */
+.card {
+    border: none;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+}
+
+.card-header {
+    border-bottom: 2px solid rgba(0,0,0,0.1);
+    font-weight: 600;
+}
+
+.stat-card {
+    text-align: center;
+    padding: 20px !important;
+}
+
+.stat-card h2 {
+    font-size: 2.5rem;
+    margin: 10px 0;
+    font-weight: bold;
+}
+
+.stat-card .card-title {
+    font-size: 0.9rem;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+}
+
+/* Tables */
+.table-hover tbody tr:hover {
+    background-color: rgba(31, 71, 136, 0.05);
+}
+
+.completed-task {
+    opacity: 0.7;
+}
+
+.completed-task td {
+    text-decoration: line-through;
+    color: #666;
+}
+
+/* Forms */
+.form-control {
+    border-radius: 6px;
+    border: 1px solid #ddd;
+    padding: 10px 15px;
+    transition: border-color 0.3s, box-shadow 0.3s;
+}
+
+.form-control:focus {
+    border-color: #1f4788;
+    box-shadow: 0 0 0 3px rgba(31, 71, 136, 0.1);
+}
+
+/* Buttons */
+.btn {
+    border-radius: 6px;
+    font-weight: 500;
+    padding: 10px 20px;
+    transition: all 0.3s;
+}
+
+.btn-primary {
+    background: linear-gradient(135deg, #1f4788 0%, #2e5c8a 100%);
+    border: none;
+}
+
+.btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(31, 71, 136, 0.3);
+}
+
+.btn-primary:active {
+    transform: translateY(0);
+}
+
+.btn-success:hover {
+    transform: translateY(-2px);
+}
+
+.btn-danger:hover {
+    transform: translateY(-2px);
+}
+
+/* Badges */
+.badge {
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-weight: 500;
+}
+
+/* Alerts */
+.alert {
+    border-radius: 8px;
+    border: none;
+    padding: 15px 20px;
+}
+
+.alert-info {
+    background-color: #d1ecf1;
+    color: #0c5460;
+}
+
+.alert-danger {
+    background-color: #f8d7da;
+    color: #721c24;
+}
+
+.alert-success {
+    background-color: #d4edda;
+    color: #155724;
+}
+
+/* Chat Box */
+#chatBox {
+    border-radius: 8px;
+    padding: 15px;
+    background-color: #f8f9fa;
+}
+
+#chatBox .alert {
+    margin-bottom: 15px;
+}
+
+/* Footer */
+footer {
+    border-top: 1px solid #ddd;
+    padding-top: 20px;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .stat-card h2 {
+        font-size: 1.8rem;
+    }
+    
+    .container {
+        padding: 0 10px;
+    }
+}
+
+/* Task row animations */
+.task-row {
+    transition: all 0.3s ease;
+}
+
+.task-row:hover {
+    transform: translateX(4px);
+}
+
+/* Checkbox styling */
+.task-checkbox {
+    cursor: pointer;
+    width: 20px;
+    height: 20px;
+}
+
+/* Quick prompt buttons */
+.btn-outline-secondary:hover {
+    background-color: #6c757d;
+    border-color: #6c757d;
+    color: white;
+}
+
+/* Loading animation */
+@keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.5; }
+}
+
+.loading {
+    animation: pulse 1.5s infinite;
+}
+
+/* Message styling */
+.bg-primary {
+    background: linear-gradient(135deg, #1f4788 0%, #2e5c8a 100%) !important;
+}
+
+.bg-light {
+    background-color: #f8f9fa !important;
+    border: 1px solid #e9ecef;
+}
